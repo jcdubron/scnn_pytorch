@@ -29,3 +29,22 @@ class LaneDataset(Dataset):
         if self.transform is not None:
             sample = self.transform(sample)
         return sample
+
+
+class TestLaneDataset(Dataset):
+    def __init__(self, img_dir, list_file, transform=None):
+        self.img_dir = img_dir
+        self.transform = transform
+        self.data_list = pd.read_csv(list_file, sep=' ', header=None, names=('image',))
+    
+    def __len__(self):
+        return self.data_list.shape[0]
+    
+    def __getitem__(self, idx):
+        img_name = self.img_dir + self.data_list.iloc[idx, 0]
+        image = Image.open(img_name)
+        
+        sample = {'image': image, 'file': self.data_list.iloc[idx, 0][:-4]}
+        if self.transform is not None:
+            sample = self.transform(sample)
+        return sample

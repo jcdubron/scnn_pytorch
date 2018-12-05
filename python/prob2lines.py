@@ -8,10 +8,10 @@ def getLane(probmap, pts):
     thr = 0.3
     coordinate = np.zeros(pts);
     for i in range(pts):
-        line = probmap[int(288-i*20/590*288)-1]
+        line = probmap[round(288-i*20/590*288)-1]
         if np.max(line)/255 > thr:
-            coordinate[i] = np.argmax(line)
-    if sum(coordinate>0) < 2:
+            coordinate[i] = np.argmax(line)+1
+    if np.sum(coordinate>0) < 2:
         coordinate = np.zeros(pts)
     return coordinate
 
@@ -37,17 +37,17 @@ def prob2lines(prob_dir, out_dir, list_file):
             os.makedirs(prefix)
         f = open(outname, 'w')
         
-        labels = list(pd.read_csv(existPath, sep=' ', header=None))
+        labels = list(pd.read_csv(existPath, sep=' ', header=None).iloc[0])
         coordinates = np.zeros((4, pts))
         for i in range(4):
             if labels[i] == 1:
-                probfile = prob_dir + im[:-4] + '_{0}_avg.png'.format(i)
+                probfile = prob_dir + im[:-4] + '_{0}_avg.png'.format(i+1)
                 probmap = np.array(Image.open(probfile))
-                coordinates[i, :] = getLane(probmap, pts)
+                coordinates[i] = getLane(probmap, pts)
 
                 if np.sum(coordinates[i]>0) > 1:
                     for idx, value in enumerate(coordinates[i]):
                         if value > 0:
-                            f.write('{0} {1} '.format(np.round(value*1640/800)-1, np.round(590-idx*20)-1))
+                            f.write('%d %d ' % (round(value*1640/800)-1, round(590-idx*20)-1))
                     f.write('\n')
         f.close()
