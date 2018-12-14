@@ -1,3 +1,4 @@
+import math
 from torch import optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -11,7 +12,6 @@ from python.dataset import *
 from python.train import *
 from python.test import *
 from python.prob2lines import *
-
 
 # parser
 parser = argparse.ArgumentParser(description='PyTorch SCNN Model')
@@ -78,7 +78,8 @@ model = SCNN().to(device)
 # if len(args.gpu) > 1:
 #     model = torch.nn.DataParallel(model, device_ids=args.gpu)
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10000, gamma=0.9)  # ExponentialLR(optimizer, gamma=0.9)
+scheduler = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: math.pow(1-epoch/90000, 0.9))
+# scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.99)  # ExponentialLR(optimizer, gamma=0.9)
 epoch_start = 1
 
 # continue training from checkpoint
@@ -110,7 +111,7 @@ elif args.weights is not None:
     model.load_state_dict(model_dict)
     print('Loading weights done.')
 
-model.double()
+
 # for sample in train_dataset:
 #     print(sample)
 # for idx, sample in enumerate(train_loader):
@@ -119,6 +120,12 @@ model.double()
 
 if args.test_data_dir is not None:
     print('Start dataset loading initialization.')
+    # test_dataset = LaneDataset(img_dir=args.train_data_dir, prob_dir=args.train_data_dir+'_labelmap',
+    #                            list_file=args.train_list_file, tag=True,
+    #                            transform=transforms.Compose([SampleResize((800, 288)),
+    #                                                          SampleToTensor(),
+    #                                                          SampleNormalize(mean=[0.3598, 0.3653, 0.3662],
+    #                                                                           std=[0.2573, 0.2663, 0.2756])]))
     test_dataset = TestLaneDataset(img_dir=args.test_data_dir, list_file=args.test_list_file,
                                    transform=transforms.Compose([TestSampleResize((800, 288)),
                                                                  TestSampleToTensor(),

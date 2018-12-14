@@ -44,7 +44,7 @@ class SampleRandomVFlip(object):
 class SampleToTensor(object):
     def __call__(self, sample):
         image = np.array(sample['image']).transpose((2, 0, 1)) / 255
-        sample['image'] = torch.from_numpy(image).to(torch.double)
+        sample['image'] = torch.from_numpy(image).to(torch.float)
         probmap = np.array(sample['probmap'])
         sample['probmap'] = torch.from_numpy(probmap).to(torch.long)
         return sample
@@ -74,7 +74,7 @@ class TestSampleResize(object):
 class TestSampleToTensor(object):
     def __call__(self, sample):
         image = np.array(sample['image']).transpose((2, 0, 1)) / 255
-        sample['image'] = torch.from_numpy(image).to(torch.double)
+        sample['image'] = torch.from_numpy(image).to(torch.float)
         return sample
 
 

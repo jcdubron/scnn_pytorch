@@ -29,7 +29,7 @@ def prob2lines(prob_dir, out_dir, list_file):
                         names=('img', 'probmap', 'label1', 'label2', 'label3', 'label4'))
     pts = 18
     
-    for im in lists['img']:
+    for k, im in enumerate(lists['img'], 1):
         existPath = prob_dir + im[:-4] + '.exist.txt'
         outname = out_dir + im[:-4] + '.lines.txt'
         prefix = '/'.join(outname.split('/')[:-1])
@@ -51,3 +51,7 @@ def prob2lines(prob_dir, out_dir, list_file):
                             f.write('%d %d ' % (round(value*1640/800)-1, round(590-idx*20)-1))
                     f.write('\n')
         f.close()
+        ''''''''''''''''''''''''''''''
+        if k % 100 == 0:
+            print('{0} images have been processed from prob to lines.'.format(k))
+        ''''''''''''''''''''''''''''''

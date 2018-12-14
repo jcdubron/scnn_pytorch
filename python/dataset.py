@@ -20,7 +20,7 @@ class LaneDataset(Dataset):
         image = Image.open(img_name)
         probmap_name = self.prob_dir + self.data_list.iloc[idx, 1]
         probmap = Image.open(probmap_name)
-        labels = torch.tensor(self.data_list.iloc[idx, 2:6], dtype=torch.double)
+        labels = torch.tensor(self.data_list.iloc[idx, 2:6], dtype=torch.float)
         
         if self.tag:
             sample = {'image': image, 'probmap': probmap, 'labels': labels, 'file': self.data_list.iloc[idx, 0][:-4]}
