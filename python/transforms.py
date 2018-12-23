@@ -10,7 +10,7 @@ class SampleResize(object):
         self.size = size
     
     def __call__(self, sample):
-        sample['image'] = sample['image'].resize(self.size, Image.BILINEAR)
+        sample['image'] = sample['image'].resize(self.size, Image.BICUBIC)
         sample['probmap'] = sample['probmap'].resize(self.size, Image.NEAREST)
         return sample
 
@@ -67,7 +67,7 @@ class TestSampleResize(object):
         self.size = size
     
     def __call__(self, sample):
-        sample['image'] = sample['image'].resize(self.size, Image.BILINEAR)
+        sample['image'] = sample['image'].resize(self.size, Image.BICUBIC)
         return sample
 
 

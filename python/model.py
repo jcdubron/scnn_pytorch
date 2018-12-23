@@ -1,4 +1,3 @@
-import math
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -50,6 +49,10 @@ class SCNN(nn.Module):
         self.conv_u = nn.Conv2d(128, 128, (1, 9), padding=(0, 4), bias=False)
         self.conv_r = nn.Conv2d(128, 128, (9, 1), padding=(4, 0), bias=False)
         self.conv_l = nn.Conv2d(128, 128, (9, 1), padding=(4, 0), bias=False)
+        # self.conv_d = nn.Conv2d(128, 128, (1, 5), dilation=(1, 2), padding=(0, 4), bias=False)
+        # self.conv_u = nn.Conv2d(128, 128, (1, 5), dilation=(1, 2), padding=(0, 4), bias=False)
+        # self.conv_r = nn.Conv2d(128, 128, (5, 1), dilation=(2, 1), padding=(4, 0), bias=False)
+        # self.conv_l = nn.Conv2d(128, 128, (5, 1), dilation=(2, 1), padding=(4, 0), bias=False)
         
         self.dropout = nn.Dropout2d(0.1)
         
@@ -109,13 +112,13 @@ class SCNN(nn.Module):
         
         for i in range(1, x.shape[2]):
             x[..., i:i+1, :].add_(F.relu(self.conv_d(x[..., i-1:i, :])))
-
+        
         for i in range(x.shape[2] - 2, 0, -1):
             x[..., i:i+1, :].add_(F.relu(self.conv_u(x[..., i+1:i+2, :])))
-
+        
         for i in range(1, x.shape[3]):
             x[..., i:i+1].add_(F.relu(self.conv_r(x[..., i-1:i])))
-
+        
         for i in range(x.shape[3] - 2, 0, -1):
             x[..., i:i+1].add_(F.relu(self.conv_l(x[..., i+1:i+2])))
         
@@ -124,7 +127,7 @@ class SCNN(nn.Module):
         
         x = self.conv8(x)
         
-        x1 = F.interpolate(x, size=[288, 800], mode='bilinear', align_corners=True)
+        x1 = F.interpolate(x, size=[288, 800], mode='bilinear', align_corners=False)
         # x1 = F.softmax(x1, dim=1)
         x2 = F.softmax(x, dim=1)
         x2 = F.avg_pool2d(x2, 2, stride=2, padding=0)
