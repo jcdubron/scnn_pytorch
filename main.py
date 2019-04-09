@@ -85,14 +85,14 @@ if len(args.gpu) > 1:
     model = torch.nn.DataParallel(model, device_ids=args.gpu)
 
 # scheduler
-# optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-fc9_params = [id(p) for p in model.fc9.parameters()]
-fc10_params = [id(p) for p in model.fc10.parameters()]
-base_params = filter(lambda p: id(p) not in fc9_params + fc10_params, model.parameters())
-optimizer = optim.SGD([{'params': base_params},
-                       {'params': model.fc9.parameters(), 'lr': args.lr * 10},
-                       {'params': model.fc10.parameters(), 'lr': args.lr * 10}],
-                      lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+# fc9_params = [id(p) for p in model.fc9.parameters()]
+# fc10_params = [id(p) for p in model.fc10.parameters()]
+# base_params = filter(lambda p: id(p) not in fc9_params + fc10_params, model.parameters())
+# optimizer = optim.SGD([{'params': base_params},
+#                        {'params': model.fc9.parameters(), 'lr': args.lr * 10},
+#                        {'params': model.fc10.parameters(), 'lr': args.lr * 10}],
+#                       lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 scheduler = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: math.pow(1-epoch/args.batches, 0.9))
 epoch_start = 1
 
